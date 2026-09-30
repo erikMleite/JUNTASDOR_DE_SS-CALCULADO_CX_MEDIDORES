@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
 <title>Juntador de SS</title>
 
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
 
 *,
@@ -84,6 +91,23 @@ textarea:focus{
     border-color:var(--accent);
 }
 
+input,
+select{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    padding:14px;
+    outline:none;
+}
+
+input:focus,
+select:focus{
+    border-color:var(--accent);
+}
+
 .separator-row{
     display:flex;
     gap:.5rem;
@@ -144,7 +168,6 @@ textarea:focus{
     padding:.35rem .8rem;
     width:100px;
 }
-
 .btn-convert{
     width:100%;
     background:var(--accent);
@@ -156,6 +179,10 @@ textarea:focus{
     cursor:pointer;
     margin-top:1rem;
     margin-bottom:1rem;
+}
+
+.btn-convert:hover{
+    opacity:.9;
 }
 
 .output-area{
@@ -228,319 +255,741 @@ textarea:focus{
     color:var(--muted);
     font-size:.75rem;
 }
+
+
+/* ================================= */
+/* NAVEGAÇÃO                        */
+/* ================================= */
+
+.nav-buttons{
+    position:fixed;
+    top:20px;
+    right:20px;
+    display:flex;
+    gap:8px;
+    z-index:1000;
+}
+
+.btn-nav{
+    background:var(--accent);
+    color:#000;
+    border:none;
+    border-radius:6px;
+    padding:.75rem 1rem;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.7rem;
+    font-weight:800;
+    cursor:pointer;
+    transition:.15s;
+    white-space:nowrap;
+}
+
+.btn-nav:hover{
+    opacity:.85;
+    transform:translateY(-1px);
+}
+
+.btn-voltar{
+    background:var(--surface);
+    color:var(--text);
+    border:1px solid var(--border);
+}
+
+.btn-voltar:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
+
+/* ================================= */
+/* CALCULADORA                       */
+/* ================================= */
+
+.tela{
+    display:none;
+    width:100%;
+}
+
+.tela.ativa{
+    display:block;
+}
+
+.calculadora-card{
+    width:100%;
+    max-width:800px;
+    margin:auto;
+}
+
+.calculadora-card h1{
+    margin-bottom:8px;
+}
+
+.calculadora-card .subtitle{
+    margin-bottom:30px;
+}
+
+.calculadora-card label{
+    margin-bottom:8px;
+}
+
+.campo-calculadora{
+    margin-bottom:20px;
+}
+
+.btn-gerar-medidores{
+    width:100%;
+    border:none;
+    background:var(--accent);
+    color:#000;
+    padding:16px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:16px;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.btn-gerar-medidores:hover{
+    opacity:.9;
+}
+
+.resultado-medidores{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    min-height:250px;
+    padding:15px;
+    white-space:pre-wrap;
+    color:var(--accent);
+    margin-bottom:15px;
+}
+
+.botoes-medidores{
+    display:flex;
+    gap:10px;
+}
+
+.btn-medidor{
+    flex:1;
+    background:var(--border);
+    border:none;
+    color:white;
+    padding:12px;
+    border-radius:6px;
+    cursor:pointer;
+    font-family:'JetBrains Mono', monospace;
+}
+
+.btn-medidor:hover{
+    background:var(--accent);
+    color:black;
+}
+
+.info-medidores{
+    margin-top:15px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+
+/* ================================= */
+/* CELULAR                           */
+/* ================================= */
+
+@media(max-width:700px){
+
+    body{
+        padding:1rem;
+        align-items:flex-start;
+    }
+
+    .nav-buttons{
+        position:relative;
+        top:auto;
+        right:auto;
+        width:100%;
+        justify-content:flex-end;
+        margin-bottom:1.5rem;
+        flex-wrap:wrap;
+    }
+
+    .btn-nav{
+        font-size:.6rem;
+        padding:.65rem .7rem;
+    }
+
+    .card{
+        margin-top:0;
+    }
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="card">
+<!-- ========================================= -->
+<!-- BOTÕES DE NAVEGAÇÃO                      -->
+<!-- ========================================= -->
 
-<h1>Juntador de SS</h1>
+<div class="nav-buttons">
 
-<p class="subtitle">
-Cole os números abaixo e gere a string com separador
-</p>
+    <button
+        class="btn-nav"
+        id="btn-calculadora"
+        onclick="mostrarCalculadora()">
 
-<label>Números</label>
+        CALCULADORA DE MEDIDORES
 
-<textarea
-id="input"
-placeholder="195167194 195301291 195314056">
-</textarea>
+    </button>
 
-<div class="separator-row">
+    <button
+        class="btn-nav btn-voltar"
+        id="btn-voltar"
+        onclick="voltarJuntador()">
 
-<span class="sep-label">
-Separador
-</span>
+        VOLTAR PÁGINA ANTERIOR
 
-<div class="sep-options">
-<button class="sep-btn active" onclick="setSep(' OU ')">OU</button>
-<button class="sep-btn" onclick="setSep(' AND ')">AND</button>
-<button class="sep-btn" onclick="setSep(', ')">,</button>
-<button class="sep-btn" onclick="setSep('\n')">↵</button>
-</div>
-
-<input
-class="sep-custom"
-id="custom-sep"
-placeholder="custom..."
-oninput="setCustomSep(this.value)">
-</div>
-
-<!-- NOVA BASE -->
-
-<div class="separator-row">
-
-<span class="sep-label">
-Base
-</span>
-
-<div class="sep-options">
-
-<button class="base-btn"
-onclick="setBase('EQUIPE K', this)">
-EQUIPE K
-</button>
-
-<button class="base-btn"
-onclick="setBase('SEC. ITAPACI', this)">
-SEC. ITAPACI
-</button>
-
-<button class="base-btn"
-onclick="setBase('SEC. MINAÇU', this)">
-SEC. MINAÇU
-</button>
-
-<button class="base-btn"
-onclick="setBase('SEC. NOVA CRIXÁS', this)">
-SEC. NOVA CRIXÁS
-</button>
-
-<button class="base-btn"
-onclick="setBase('SEC. PORANGATU', this)">
-SEC. PORANGATU
-</button>
-
-<button class="base-btn"
-onclick="setBase('SEC. URUAÇU', this)">
-SEC. URUAÇU
-</button>
+    </button>
 
 </div>
 
-</div>
 
-<!-- PAINEL DINÂMICO DE EQUIPES -->
-
-<div class="equipe-container">
-
-<div class="equipe-title">
-Equipes da Base Selecionada
-</div>
+<!-- ========================================= -->
+<!-- TELA 1 - JUNTADOR DE SS                  -->
+<!-- ========================================= -->
 
 <div
-class="equipe-grid"
-id="equipes-container">
-</div>
+    class="tela ativa"
+    id="tela-juntador">
+
+    <div class="card">
+
+        <h1>
+            Juntador de SS
+        </h1>
+
+        <p class="subtitle">
+            Cole os números abaixo e gere a string com separador
+        </p>
+
+        <label>
+            Números
+        </label>
+
+        <textarea
+            id="input"
+            placeholder="195167194 195301291 195314056">
+        </textarea>
+
+        <div class="separator-row">
+
+            <span class="sep-label">
+                Separador
+            </span>
+
+            <div class="sep-options">
+
+                <button
+                    class="sep-btn active"
+                    onclick="setSep(' OU ', this)">
+
+                    OU
+
+                </button>
+
+                <button
+                    class="sep-btn"
+                    onclick="setSep(' AND ', this)">
+
+                    AND
+
+                </button>
+
+                <button
+                    class="sep-btn"
+                    onclick="setSep(', ', this)">
+
+                    ,
+
+                </button>
+
+                <button
+                    class="sep-btn"
+                    onclick="setSep('\n', this)">
+
+                    ↵
+
+                </button>
+
+            </div>
+
+            <input
+                class="sep-custom"
+                id="custom-sep"
+                placeholder="custom..."
+                oninput="setCustomSep(this.value)">
+
+        </div>
+
+
+        <!-- BASE -->
+
+        <div class="separator-row">
+
+            <span class="sep-label">
+                Base
+            </span>
+
+            <div class="sep-options">
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('EQUIPE K', this)">
+
+                    EQUIPE K
+
+                </button>
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('SEC. ITAPACI', this)">
+
+                    SEC. ITAPACI
+
+                </button>
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('SEC. MINAÇU', this)">
+
+                    SEC. MINAÇU
+
+                </button>
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('SEC. NOVA CRIXÁS', this)">
+
+                    SEC. NOVA CRIXÁS
+
+                </button>
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('SEC. PORANGATU', this)">
+
+                    SEC. PORANGATU
+
+                </button>
+
+                <button
+                    class="base-btn"
+                    onclick="setBase('SEC. URUAÇU', this)">
+
+                    SEC. URUAÇU
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- ================================= -->
+        <!-- EQUIPES                           -->
+        <!-- ================================= -->
+
+        <div class="equipe-container">
+
+            <div class="equipe-title">
+                Equipes da Base Selecionada
+            </div>
+
+            <div
+                class="equipe-grid"
+                id="equipes-container">
+            </div>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- GERAR                             -->
+        <!-- ================================= -->
+
+        <button
+            class="btn-convert"
+            onclick="converter()">
+
+            ▶ GERAR
+
+        </button>
+
+
+        <!-- ================================= -->
+        <!-- RESULTADO                         -->
+        <!-- ================================= -->
+
+        <div
+            class="output-area"
+            id="output-area">
+
+            <label>
+                Resultado
+            </label>
+
+            <div
+                class="output-box"
+                id="output">
+            </div>
+
+            <div class="output-footer">
+
+                <span
+                    class="stats"
+                    id="stats">
+                </span>
+
+                <div>
+
+                    <button
+                        class="btn-clear"
+                        onclick="limpar()">
+
+                        Limpar
+
+                    </button>
+
+                    <button
+                        class="btn-copy"
+                        id="btn-copy"
+                        onclick="copiar()">
+
+                        Copiar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
-<button class="btn-convert" onclick="converter()">
-▶ GERAR
-</button>
 
-<div class="output-area" id="output-area">
 
-<label>Resultado</label>
+<!-- ========================================= -->
+<!-- TELA 2 - CALCULADORA DE MEDIDORES       -->
+<!-- ========================================= -->
 
-<div class="output-box" id="output"></div>
+<div
+    class="tela"
+    id="tela-calculadora">
 
-<div class="output-footer">
+    <div class="calculadora-card">
 
-<span class="stats" id="stats"></span>
+        <h1>
+            Cálculo de Medidores
+        </h1>
 
-<div>
+        <p class="subtitle">
+            Descobrir sequência de medidores com dígito verificador.
+        </p>
 
-<button class="btn-clear" onclick="limpar()">
-Limpar
-</button>
+        <div class="campo-calculadora">
 
-<button class="btn-copy" id="btn-copy" onclick="copiar()">
-Copiar
-</button>
+            <label>
+                Primeiro Medidor (sem dígito)
+            </label>
 
-</div>
+            <input
+                type="number"
+                id="inicio"
+                placeholder="14003656">
 
-</div>
+        </div>
 
-</div>
+        <div class="campo-calculadora">
+
+            <label>
+                Quantidade da Caixa
+            </label>
+
+            <select id="quantidade">
+
+                <option value="8">
+                    Caixa com 8
+                </option>
+
+                <option value="10">
+                    Caixa com 10
+                </option>
+
+                <option value="12">
+                    Caixa com 12
+                </option>
+
+                <option value="18">
+                    Caixa com 18
+                </option>
+
+            </select>
+
+        </div>
+
+        <button
+            class="btn-gerar-medidores"
+            onclick="gerarMedidores()">
+
+            ▶ GERAR MEDIDORES
+
+        </button>
+
+        <div
+            class="resultado-medidores"
+            id="resultado-medidores">
+        </div>
+
+        <div class="botoes-medidores">
+
+            <button
+                class="btn-medidor"
+                onclick="copiarMedidores()">
+
+                Copiar
+
+            </button>
+
+            <button
+                class="btn-medidor"
+                onclick="limparMedidores()">
+
+                Limpar
+
+            </button>
+
+        </div>
+
+        <div
+            class="info-medidores"
+            id="estatistica">
+        </div>
+
+    </div>
 
 </div>
 
 <script>
 
+/* ========================================= */
+/* VARIÁVEIS DO JUNTADOR                    */
+/* ========================================= */
+
 let separador = ' OU ';
+
 let prefixoAtivo = '';
+
 let numerosGerados = [];
 
 let baseAtiva = '';
+
 let textoBase = '';
 
-let equipesPorBase = {
 
-"EQUIPE K":{
+/* ========================================= */
+/* BASES E EQUIPES                           */
+/* ========================================= */
 
-base:" ",
+const equipesPorBase = {
 
-equipes:[
+    "EQUIPE K":{
 
-"ITPK292M",
-"MICK298M",
-"MROK296M",
-"NCSK294M",
-"NIQK290M",
-"PORK297M",
-"SMAK295M",
-"STEK293M",
-"URUK291M"
+        base:" ",
 
-]
+        equipes:[
 
-},
+            "ITPK292M",
+            "MICK298M",
+            "MROK296M",
+            "NCSK294M",
+            "NIQK290M",
+            "PORK297M",
+            "SMAK295M",
+            "STEK293M",
+            "URUK291M"
 
-"SEC. ITAPACI":{
+        ]
 
-base:"",
+    },
 
-equipes:[
 
-"CXAM230M",
-"CXAM231T",
-"CXAM233M",
-"ITPK292M",
-"ITPM217T",
-"ITPM218M",
-"ITPM218T",
-"RUBM279T",
-"RUBM281M",
-"SLNM242M",
-"SLNM243T",
-"STEK293M",
-"STEM226T",
-"STEM227M",
-"STEM227T",
-"STYM229M",
-"14 OU 18 OU 19 OU 21 OU 39"
+    "SEC. ITAPACI":{
 
-]
+        base:"",
 
-},
+        equipes:[
 
-"SEC. MINAÇU":{
+            "CXAM230M",
+            "CXAM231T",
+            "CXAM233M",
+            "ITPK292M",
+            "ITPM217T",
+            "ITPM218M",
+            "ITPM218T",
+            "RUBM279T",
+            "RUBM281M",
+            "SLNM242M",
+            "SLNM243T",
+            "STEK293M",
+            "STEM226T",
+            "STEM227M",
+            "STEM227T",
+            "14 OU 18 OU 19 OU 21 OU 39"
 
-base:" ",
+        ]
 
-equipes:[
+    },
 
-"CDSM245M",
-"CDSM245T",
-"CPCM284M",
-"FOMM259M",
-"FOMM259T",
-"MICK298M",
-"MICM252M",
-"MICM252T",
-"MICM253M",
-"MICM255T",
-"TROM221M",
-"TROM222T",
-"TROM223M",
-"16 OU 25 OU 27 OU 28 OU 30 OU 43"
 
-]
+    "SEC. MINAÇU":{
 
-},
+        base:" ",
 
-"SEC. NOVA CRIXÁS":{
+        equipes:[
 
-base:"",
+            "CDSM245M",
+            "CDSM245T",
+            "CPCM284M",
+            "FOMM259M",
+            "FOMM259T",
+            "MICK298M",
+            "MICM252M",
+            "MICM252T",
+            "MICM253M",
+            "MICM255T",
+            "TROM221M",
+            "TROM222T",
+            "TROM223M",
+            "16 OU 25 OU 27 OU 28 OU 30 OU 43"
 
-equipes:[
+        ]
 
-"BONM265M",
-"BONM265T",
-"MUNM273T",
-"NCSK294M",
-"NCSM276T",
-"NCSM277M",
-"NPLM263M",
-"SMAK295M",
-"SMAM247M",
-"SMAM247T",
-"SMAM250T",
-"SMYM251M",
-"UIRM282M",
-"UIRM283T",
-"26 OU 33 OU 34 OU 36 OU 37 OU 42"
+    },
 
-]
 
-},
+    "SEC. NOVA CRIXÁS":{
 
-"SEC. PORANGATU":{
+        base:"",
 
-base:" ",
+        equipes:[
 
-equipes:[
+            "BONM265M",
+            "BONM265T",
+            "MUNM273T",
+            "NCSK294M",
+            "NCSM276T",
+            "NCSM277M",
+            "NPLM263M",
+            "SMAK295M",
+            "SMAM247M",
+            "SMAM247T",
+            "SMAM250T",
+            "SMYM251M",
+            "UIRM282M",
+            "UIRM283T",
+            "26 OU 33 OU 34 OU 36 OU 37 OU 42"
 
-"ENOM261M",
-"MROK296M",
-"MROM267T",
-"MROM268T",
-"MROM269M",
-"PORK297M",
-"PORM208M",
-"PORM209M",
-"PORM209T",
-"PORM210M",
-"PORM210T",
-"POYM214M",
-"STAM262M",
-"01 OU 29 OU 31 OU 32 OU 35"
+        ]
 
-]
+    },
 
-},
 
-"SEC. URUAÇU":{
+    "SEC. PORANGATU":{
 
-base:" ",
+        base:" ",
 
-equipes:[
+        equipes:[
 
-"CPNM224M",
-"NIQK290M",
-"NIQM235T",
-"NIQM236M",
-"NIQM236T",
-"NIQM237M",
-"NIQM237T",
-"NIYM241M",
-"URUK291M",
-"URUM202M",
-"URUM202T",
-"URUM203M",
-"URUM203T",
-"URYM207M",
-"11 OU 17 OU 20 OU 23 OU 24 OU 43 OU 48"
-]
+            "ENOM261M",
+            "MROK296M",
+            "MROM267T",
+            "MROM268T",
+            "MROM269M",
+            "PORK297M",
+            "PORM208M",
+            "PORM209M",
+            "PORM209T",
+            "PORM210M",
+            "PORM210T",
+            "POYM214M",
+            "STAM262M",
+            "01 OU 29 OU 31 OU 32 OU 35"
 
-}
+        ]
+
+    },
+
+
+    "SEC. URUAÇU":{
+
+        base:" ",
+
+        equipes:[
+
+            "CPNM224M",
+            "NIQK290M",
+            "NIQM235T",
+            "NIQM236M",
+            "NIQM236T",
+            "NIQM237M",
+            "NIQM237T",
+            "NIYM241M",
+            "URUK291M",
+            "URUM202M",
+            "URUM202T",
+            "URUM203M",
+            "URUM203T",
+            "URYM207M",
+            "11 OU 17 OU 20 OU 23 OU 24 OU 43 OU 48"
+
+        ]
+
+    }
 
 };
 
-function setSep(sep){
+
+/* ========================================= */
+/* SEPARADOR                                */
+/* ========================================= */
+
+function setSep(sep, btn){
 
     separador = sep;
 
     document
         .querySelectorAll('.sep-btn')
-        .forEach(btn => btn.classList.remove('active'));
+        .forEach(botao => {
 
-    event.target.classList.add('active');
+            botao.classList.remove('active');
 
-    document.getElementById('custom-sep').value = '';
+        });
 
-    if(
-        document
-        .getElementById('output-area')
-        .classList
-        .contains('visible')
-    ){
-        renderOutput();
-    }
+    btn.classList.add('active');
+
+    document
+        .getElementById('custom-sep')
+        .value = '';
+
+    renderOutput();
+
 }
+
 
 function setCustomSep(valor){
 
@@ -550,65 +999,107 @@ function setCustomSep(valor){
 
         document
             .querySelectorAll('.sep-btn')
-            .forEach(btn => btn.classList.remove('active'));
+            .forEach(btn => {
+
+                btn.classList.remove('active');
+
+            });
+
     }
 
     renderOutput();
+
 }
+
+
+/* ========================================= */
+/* SELECIONAR BASE                          */
+/* ========================================= */
 
 function setBase(nomeBase, btn){
 
     baseAtiva = nomeBase;
 
-    textoBase = equipesPorBase[nomeBase].base;
+    textoBase =
+        equipesPorBase[nomeBase].base;
 
     prefixoAtivo = '';
 
     document
         .querySelectorAll('.base-btn')
-        .forEach(b => b.classList.remove('active'));
+        .forEach(botao => {
+
+            botao.classList.remove('active');
+
+        });
 
     btn.classList.add('active');
 
     const container =
-        document.getElementById('equipes-container');
+        document.getElementById(
+            'equipes-container'
+        );
 
     container.innerHTML = '';
 
-    equipesPorBase[nomeBase].equipes.forEach(equipe => {
+    equipesPorBase[nomeBase]
+        .equipes
+        .forEach(equipe => {
 
-        const botao =
-            document.createElement('button');
+            const botao =
+                document.createElement('button');
 
-        botao.className = 'prefix-btn';
+            botao.className =
+                'prefix-btn';
 
-        botao.textContent = equipe;
+            botao.textContent =
+                equipe;
 
-        botao.onclick = function(){
+            botao.onclick =
+                function(){
 
-            setPrefix(equipe, botao);
+                    setPrefix(
+                        equipe,
+                        botao
+                    );
 
-        };
+                };
 
-        container.appendChild(botao);
+            container.appendChild(botao);
 
-    });
+        });
 
     renderOutput();
+
 }
+
+
+/* ========================================= */
+/* SELECIONAR EQUIPE                        */
+/* ========================================= */
 
 function setPrefix(prefixo, btn){
 
     prefixoAtivo = prefixo;
 
     document
-        .querySelectorAll('#equipes-container .prefix-btn')
-        .forEach(b => b.classList.remove('active'));
+        .querySelectorAll(
+            '#equipes-container .prefix-btn'
+        )
+        .forEach(botao => {
+
+            botao.classList.remove('active');
+
+        });
 
     btn.classList.add('active');
 
     renderOutput();
+
 }
+/* ========================================= */
+/* MOSTRAR RESULTADO                        */
+/* ========================================= */
 
 function renderOutput(){
 
@@ -623,28 +1114,38 @@ function renderOutput(){
         resultado += textoBase;
 
         resultado += '\n\n';
+
     }
 
-    resultado += numerosGerados.join(separador);
+    resultado +=
+        numerosGerados.join(separador);
 
     if(prefixoAtivo){
 
-        resultado += ' PARA EQUIPE ';
+        resultado +=
+            ' PARA EQUIPE ';
 
-        resultado += prefixoAtivo;
+        resultado +=
+            prefixoAtivo;
+
     }
 
-    document.getElementById('output').textContent =
+    document
+        .getElementById('output')
+        .textContent =
         resultado;
-
-    document.getElementById('btn-copy').textContent =
-        'Copiar';
 
     document
         .getElementById('btn-copy')
-        .classList
-        .remove('copied');
+        .textContent =
+        'Copiar';
+
 }
+
+
+/* ========================================= */
+/* GERAR                                    */
+/* ========================================= */
 
 function converter(){
 
@@ -653,13 +1154,22 @@ function converter(){
         .getElementById('input')
         .value;
 
-    numerosGerados = raw
+    numerosGerados =
+        raw
         .split(/[\s,;]+/)
         .map(item => item.trim())
-        .filter(item => item.length > 0);
+        .filter(
+            item => item.length > 0
+        );
 
     if(numerosGerados.length === 0){
+
+        alert(
+            'Digite pelo menos um número.'
+        );
+
         return;
+
     }
 
     document
@@ -670,23 +1180,36 @@ function converter(){
     document
         .getElementById('stats')
         .textContent =
-        numerosGerados.length + ' itens';
+        numerosGerados.length +
+        ' itens';
 
     renderOutput();
+
 }
+
+
+/* ========================================= */
+/* LIMPAR                                   */
+/* ========================================= */
 
 function limpar(){
 
-    document.getElementById('input').value = '';
+    document
+        .getElementById('input')
+        .value = '';
 
-    document.getElementById('output').textContent = '';
+    document
+        .getElementById('output')
+        .textContent = '';
 
     document
         .getElementById('output-area')
         .classList
         .remove('visible');
 
-    document.getElementById('stats').textContent = '';
+    document
+        .getElementById('stats')
+        .textContent = '';
 
     numerosGerados = [];
 
@@ -698,7 +1221,11 @@ function limpar(){
 
     document
         .querySelectorAll('.base-btn')
-        .forEach(btn => btn.classList.remove('active'));
+        .forEach(btn => {
+
+            btn.classList.remove('active');
+
+        });
 
     document
         .getElementById('equipes-container')
@@ -707,7 +1234,13 @@ function limpar(){
     document
         .getElementById('input')
         .focus();
+
 }
+
+
+/* ========================================= */
+/* COPIAR                                   */
+/* ========================================= */
 
 function copiar(){
 
@@ -716,38 +1249,335 @@ function copiar(){
         .getElementById('output')
         .textContent;
 
-    navigator.clipboard.writeText(texto);
+    if(!texto){
+        return;
+    }
+
+    navigator.clipboard
+        .writeText(texto);
 
     const btn =
-        document.getElementById('btn-copy');
+        document.getElementById(
+            'btn-copy'
+        );
 
-    btn.textContent = '✓ Copiado';
-
-    btn.classList.add('copied');
+    btn.textContent =
+        '✓ Copiado';
 
     setTimeout(() => {
 
-        btn.textContent = 'Copiar';
-
-        btn.classList.remove('copied');
+        btn.textContent =
+            'Copiar';
 
     }, 2000);
+
 }
 
-document
-.getElementById('input')
-.addEventListener('keydown', e => {
 
-    if(
-        e.ctrlKey &&
-        e.key === 'Enter'
-    ){
-        converter();
+/* ========================================= */
+/* CTRL + ENTER                             */
+/* ========================================= */
+
+document
+    .getElementById('input')
+    .addEventListener(
+        'keydown',
+        function(e){
+
+            if(
+                e.ctrlKey &&
+                e.key === 'Enter'
+            ){
+
+                converter();
+
+            }
+
+        }
+    );
+
+/* ========================================= */
+/* CALCULADORA DE MEDIDORES                 */
+/* ========================================= */
+
+
+/* ========================================= */
+/* CÁLCULO DO DÍGITO                        */
+/* ========================================= */
+
+function calcularDigito(numero){
+
+    const n =
+        numero
+        .toString()
+        .padStart(8,'0');
+
+    let soma = 0;
+
+    soma += Number(n[7]) * 2;
+
+    soma += Number(n[6]) * 3;
+
+    soma += Number(n[5]) * 4;
+
+    soma += Number(n[4]) * 5;
+
+    soma += Number(n[3]) * 6;
+
+    soma += Number(n[2]) * 7;
+
+    soma += Number(n[1]) * 8;
+
+    soma += Number(n[0]) * 9;
+
+    let d =
+        11 -
+        (soma % 11);
+
+    if(d === 10){
+        return 0;
     }
 
-});
+    if(d === 11){
+        return 1;
+    }
+
+    return d;
+
+}
+
+
+/* ========================================= */
+/* GERAR MEDIDORES                          */
+/* ========================================= */
+
+function gerarMedidores(){
+
+    const inicio =
+        parseInt(
+            document
+            .getElementById('inicio')
+            .value
+        );
+
+    if(
+        isNaN(inicio)
+    ){
+
+        alert(
+            'Informe o primeiro medidor.'
+        );
+
+        return;
+
+    }
+
+    const quantidade =
+        parseInt(
+            document
+            .getElementById('quantidade')
+            .value
+        );
+
+    let resultado = '';
+
+    for(
+        let i = 0;
+        i < quantidade;
+        i++
+    ){
+
+        const numero =
+            inicio + i;
+
+        const digito =
+            calcularDigito(numero);
+
+        resultado +=
+            numero +
+            '-' +
+            digito +
+            '\n';
+
+    }
+
+    document
+        .getElementById(
+            'resultado-medidores'
+        )
+        .textContent =
+        resultado;
+
+    document
+        .getElementById(
+            'estatistica'
+        )
+        .textContent =
+        quantidade +
+        ' medidores gerados';
+
+}
+
+
+/* ========================================= */
+/* COPIAR MEDIDORES                         */
+/* ========================================= */
+
+function copiarMedidores(){
+
+    const texto =
+        document
+        .getElementById(
+            'resultado-medidores'
+        )
+        .textContent;
+
+    if(!texto){
+
+        alert(
+            'Não há medidores para copiar.'
+        );
+
+        return;
+
+    }
+
+    navigator.clipboard
+        .writeText(texto);
+
+    alert(
+        'Copiado!'
+    );
+
+}
+
+
+/* ========================================= */
+/* LIMPAR MEDIDORES                        */
+/* ========================================= */
+
+function limparMedidores(){
+
+    document
+        .getElementById('inicio')
+        .value = '';
+
+    document
+        .getElementById(
+            'resultado-medidores'
+        )
+        .textContent = '';
+
+    document
+        .getElementById(
+            'estatistica'
+        )
+        .textContent = '';
+
+    document
+        .getElementById('inicio')
+        .focus();
+
+}
+
+/* ========================================= */
+/* MOSTRAR CALCULADORA                      */
+/* ========================================= */
+
+function mostrarCalculadora(){
+
+    document
+        .getElementById(
+            'tela-juntador'
+        )
+        .classList
+        .remove('ativa');
+
+    document
+        .getElementById(
+            'tela-calculadora'
+        )
+        .classList
+        .add('ativa');
+
+    document
+        .getElementById(
+            'btn-calculadora'
+        )
+        .style
+        .display = 'none';
+
+    document
+        .getElementById(
+            'btn-voltar'
+        )
+        .style
+        .display = 'block';
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+
+}
+
+
+/* ========================================= */
+/* VOLTAR PARA O JUNTADOR                   */
+/* ========================================= */
+
+function voltarJuntador(){
+
+    document
+        .getElementById(
+            'tela-calculadora'
+        )
+        .classList
+        .remove('ativa');
+
+    document
+        .getElementById(
+            'tela-juntador'
+        )
+        .classList
+        .add('ativa');
+
+    document
+        .getElementById(
+            'btn-calculadora'
+        )
+        .style
+        .display = 'block';
+
+    document
+        .getElementById(
+            'btn-voltar'
+        )
+        .style
+        .display = 'block';
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+
+}
+
+
+/* ========================================= */
+/* ESTADO INICIAL                           */
+/* ========================================= */
+
+document
+    .getElementById(
+        'btn-voltar'
+    )
+    .style
+    .display = 'block';
 
 </script>
 
 </body>
+
 </html>
+
