@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juntador de SS</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+
+*,
+*::before,
+*::after{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#0f0f0f;
+    --surface:#1a1a1a;
+    --border:#2a2a2a;
+    --accent:#f0c040;
+    --text:#e8e8e8;
+    --muted:#555;
+    --success:#4ade80;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:2rem;
+}
+
+.card{
+    width:100%;
+    max-width:900px;
+}
+
+h1{
+    font-family:'Syne', sans-serif;
+    font-size:2rem;
+    font-weight:800;
+    color:var(--accent);
+    margin-bottom:.25rem;
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:.8rem;
+    margin-bottom:2rem;
+}
+
+label{
+    display:block;
+    font-size:.7rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin-bottom:.5rem;
+}
+
+textarea{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.85rem;
+    padding:1rem;
+    resize:vertical;
+    min-height:120px;
+    outline:none;
+    line-height:1.6;
+}
+
+textarea:focus{
+    border-color:var(--accent);
+}
+
+.separator-row{
+    display:flex;
+    gap:.5rem;
+    margin:1rem 0;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.sep-label{
+    font-size:.7rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    min-width:80px;
+}
+
+.sep-options{
+    display:flex;
+    gap:.4rem;
+    flex-wrap:wrap;
+}
+
+.sep-btn,
+.base-btn,
+.prefix-btn{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    color:var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.75rem;
+    padding:.35rem .8rem;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.sep-btn:hover,
+.base-btn:hover,
+.prefix-btn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
+.sep-btn.active,
+.base-btn.active,
+.prefix-btn.active{
+    background:var(--accent);
+    color:#000;
+    border-color:var(--accent);
+    font-weight:700;
+}
+
+.sep-custom{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    color:var(--text);
+    padding:.35rem .8rem;
+    width:100px;
+}
+
+.btn-convert{
+    width:100%;
+    background:var(--accent);
+    color:#000;
+    border:none;
+    border-radius:6px;
+    padding:.9rem;
+    font-weight:800;
+    cursor:pointer;
+    margin-top:1rem;
+    margin-bottom:1rem;
+}
+
+.output-area{
+    display:none;
+}
+
+.output-area.visible{
+    display:block;
+}
+
+.output-box{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1rem;
+    min-height:120px;
+    white-space:pre-wrap;
+    line-height:1.6;
+    color:var(--accent);
+}
+
+.equipe-container{
+    margin-top:1rem;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:1rem;
+}
+
+.equipe-title{
+    color:var(--muted);
+    font-size:.75rem;
+    margin-bottom:.75rem;
+    text-transform:uppercase;
+}
+
+.equipe-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem;
+}
+
+.btn-copy,
+.btn-clear{
+    background:var(--border);
+    color:white;
+    border:none;
+    border-radius:4px;
+    padding:.5rem .8rem;
+    cursor:pointer;
+}
+
+.btn-copy:hover{
+    background:var(--accent);
+    color:black;
+}
+
+.btn-clear:hover{
+    background:#c0392b;
+}
+
+.output-footer{
+    margin-top:.75rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.stats{
+    color:var(--muted);
+    font-size:.75rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Juntador de SS</h1>
+
+<p class="subtitle">
+Cole os números abaixo e gere a string com separador
+</p>
+
+<label>Números</label>
+
+<textarea
+id="input"
+placeholder="195167194 195301291 195314056">
+</textarea>
+
+<div class="separator-row">
+
+<span class="sep-label">
+Separador
+</span>
+
+<div class="sep-options">
+<button class="sep-btn active" onclick="setSep(' OU ')">OU</button>
+<button class="sep-btn" onclick="setSep(' AND ')">AND</button>
+<button class="sep-btn" onclick="setSep(', ')">,</button>
+<button class="sep-btn" onclick="setSep('\n')">↵</button>
+</div>
+
+<input
+class="sep-custom"
+id="custom-sep"
+placeholder="custom..."
+oninput="setCustomSep(this.value)">
+</div>
+
+<!-- NOVA BASE -->
+
+<div class="separator-row">
+
+<span class="sep-label">
+Base
+</span>
+
+<div class="sep-options">
+
+<button class="base-btn"
+onclick="setBase('EQUIPE K', this)">
+EQUIPE K
+</button>
+
+<button class="base-btn"
+onclick="setBase('SEC. ITAPACI', this)">
+SEC. ITAPACI
+</button>
+
+<button class="base-btn"
+onclick="setBase('SEC. MINAÇU', this)">
+SEC. MINAÇU
+</button>
+
+<button class="base-btn"
+onclick="setBase('SEC. NOVA CRIXÁS', this)">
+SEC. NOVA CRIXÁS
+</button>
+
+<button class="base-btn"
+onclick="setBase('SEC. PORANGATU', this)">
+SEC. PORANGATU
+</button>
+
+<button class="base-btn"
+onclick="setBase('SEC. URUAÇU', this)">
+SEC. URUAÇU
+</button>
+
+</div>
+
+</div>
+
+<!-- PAINEL DINÂMICO DE EQUIPES -->
+
+<div class="equipe-container">
+
+<div class="equipe-title">
+Equipes da Base Selecionada
+</div>
+
+<div
+class="equipe-grid"
+id="equipes-container">
+</div>
+
+</div>
+<button class="btn-convert" onclick="converter()">
+▶ GERAR
+</button>
+
+<div class="output-area" id="output-area">
+
+<label>Resultado</label>
+
+<div class="output-box" id="output"></div>
+
+<div class="output-footer">
+
+<span class="stats" id="stats"></span>
+
+<div>
+
+<button class="btn-clear" onclick="limpar()">
+Limpar
+</button>
+
+<button class="btn-copy" id="btn-copy" onclick="copiar()">
+Copiar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let separador = ' OU ';
+let prefixoAtivo = '';
+let numerosGerados = [];
+
+let baseAtiva = '';
+let textoBase = '';
+
+let equipesPorBase = {
+
+"EQUIPE K":{
+
+base:" ",
+
+equipes:[
+
+"ITPK292M",
+"MICK298M",
+"MROK296M",
+"NCSK294M",
+"NIQK290M",
+"PORK297M",
+"SMAK295M",
+"STEK293M",
+"URUK291M"
+
+]
+
+},
+
+"SEC. ITAPACI":{
+
+base:"",
+
+equipes:[
+
+"CXAM230M",
+"CXAM231T",
+"CXAM233M",
+"ITPK292M",
+"ITPM217T",
+"ITPM218M",
+"ITPM218T",
+"RUBM279T",
+"RUBM281M",
+"SLNM242M",
+"SLNM243T",
+"STEK293M",
+"STEM226T",
+"STEM227M",
+"STEM227T",
+"STYM229M",
+"14 OU 18 OU 19 OU 21 OU 39"
+
+]
+
+},
+
+"SEC. MINAÇU":{
+
+base:" ",
+
+equipes:[
+
+"CDSM245M",
+"CDSM245T",
+"CPCM284M",
+"FOMM259M",
+"FOMM259T",
+"MICK298M",
+"MICM252M",
+"MICM252T",
+"MICM253M",
+"MICM255T",
+"TROM221M",
+"TROM222T",
+"TROM223M",
+"16 OU 25 OU 27 OU 28 OU 30 OU 43"
+
+]
+
+},
+
+"SEC. NOVA CRIXÁS":{
+
+base:"",
+
+equipes:[
+
+"BONM265M",
+"BONM265T",
+"MUNM273T",
+"NCSK294M",
+"NCSM276T",
+"NCSM277M",
+"NPLM263M",
+"SMAK295M",
+"SMAM247M",
+"SMAM247T",
+"SMAM250T",
+"SMYM251M",
+"UIRM282M",
+"UIRM283T",
+"26 OU 33 OU 34 OU 36 OU 37 OU 42"
+
+]
+
+},
+
+"SEC. PORANGATU":{
+
+base:" ",
+
+equipes:[
+
+"ENOM261M",
+"MROK296M",
+"MROM267T",
+"MROM268T",
+"MROM269M",
+"PORK297M",
+"PORM208M",
+"PORM209M",
+"PORM209T",
+"PORM210M",
+"PORM210T",
+"POYM214M",
+"STAM262M",
+"01 OU 29 OU 31 OU 32 OU 35"
+
+]
+
+},
+
+"SEC. URUAÇU":{
+
+base:" ",
+
+equipes:[
+
+"CPNM224M",
+"NIQK290M",
+"NIQM235T",
+"NIQM236M",
+"NIQM236T",
+"NIQM237M",
+"NIQM237T",
+"NIYM241M",
+"URUK291M",
+"URUM202M",
+"URUM202T",
+"URUM203M",
+"URUM203T",
+"URYM207M",
+"11 OU 17 OU 20 OU 23 OU 24 OU 43 OU 48"
+]
+
+}
+
+};
+
+function setSep(sep){
+
+    separador = sep;
+
+    document
+        .querySelectorAll('.sep-btn')
+        .forEach(btn => btn.classList.remove('active'));
+
+    event.target.classList.add('active');
+
+    document.getElementById('custom-sep').value = '';
+
+    if(
+        document
+        .getElementById('output-area')
+        .classList
+        .contains('visible')
+    ){
+        renderOutput();
+    }
+}
+
+function setCustomSep(valor){
+
+    if(valor){
+
+        separador = valor;
+
+        document
+            .querySelectorAll('.sep-btn')
+            .forEach(btn => btn.classList.remove('active'));
+    }
+
+    renderOutput();
+}
+
+function setBase(nomeBase, btn){
+
+    baseAtiva = nomeBase;
+
+    textoBase = equipesPorBase[nomeBase].base;
+
+    prefixoAtivo = '';
+
+    document
+        .querySelectorAll('.base-btn')
+        .forEach(b => b.classList.remove('active'));
+
+    btn.classList.add('active');
+
+    const container =
+        document.getElementById('equipes-container');
+
+    container.innerHTML = '';
+
+    equipesPorBase[nomeBase].equipes.forEach(equipe => {
+
+        const botao =
+            document.createElement('button');
+
+        botao.className = 'prefix-btn';
+
+        botao.textContent = equipe;
+
+        botao.onclick = function(){
+
+            setPrefix(equipe, botao);
+
+        };
+
+        container.appendChild(botao);
+
+    });
+
+    renderOutput();
+}
+
+function setPrefix(prefixo, btn){
+
+    prefixoAtivo = prefixo;
+
+    document
+        .querySelectorAll('#equipes-container .prefix-btn')
+        .forEach(b => b.classList.remove('active'));
+
+    btn.classList.add('active');
+
+    renderOutput();
+}
+
+function renderOutput(){
+
+    if(numerosGerados.length === 0){
+        return;
+    }
+
+    let resultado = '';
+
+    if(textoBase){
+
+        resultado += textoBase;
+
+        resultado += '\n\n';
+    }
+
+    resultado += numerosGerados.join(separador);
+
+    if(prefixoAtivo){
+
+        resultado += ' PARA EQUIPE ';
+
+        resultado += prefixoAtivo;
+    }
+
+    document.getElementById('output').textContent =
+        resultado;
+
+    document.getElementById('btn-copy').textContent =
+        'Copiar';
+
+    document
+        .getElementById('btn-copy')
+        .classList
+        .remove('copied');
+}
+
+function converter(){
+
+    const raw =
+        document
+        .getElementById('input')
+        .value;
+
+    numerosGerados = raw
+        .split(/[\s,;]+/)
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+
+    if(numerosGerados.length === 0){
+        return;
+    }
+
+    document
+        .getElementById('output-area')
+        .classList
+        .add('visible');
+
+    document
+        .getElementById('stats')
+        .textContent =
+        numerosGerados.length + ' itens';
+
+    renderOutput();
+}
+
+function limpar(){
+
+    document.getElementById('input').value = '';
+
+    document.getElementById('output').textContent = '';
+
+    document
+        .getElementById('output-area')
+        .classList
+        .remove('visible');
+
+    document.getElementById('stats').textContent = '';
+
+    numerosGerados = [];
+
+    prefixoAtivo = '';
+
+    baseAtiva = '';
+
+    textoBase = '';
+
+    document
+        .querySelectorAll('.base-btn')
+        .forEach(btn => btn.classList.remove('active'));
+
+    document
+        .getElementById('equipes-container')
+        .innerHTML = '';
+
+    document
+        .getElementById('input')
+        .focus();
+}
+
+function copiar(){
+
+    const texto =
+        document
+        .getElementById('output')
+        .textContent;
+
+    navigator.clipboard.writeText(texto);
+
+    const btn =
+        document.getElementById('btn-copy');
+
+    btn.textContent = '✓ Copiado';
+
+    btn.classList.add('copied');
+
+    setTimeout(() => {
+
+        btn.textContent = 'Copiar';
+
+        btn.classList.remove('copied');
+
+    }, 2000);
+}
+
+document
+.getElementById('input')
+.addEventListener('keydown', e => {
+
+    if(
+        e.ctrlKey &&
+        e.key === 'Enter'
+    ){
+        converter();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
